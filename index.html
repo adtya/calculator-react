@@ -1,0 +1,221 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      #container {
+        display: grid;
+
+        grid-gap: 1rem;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        grid-template-areas:
+          ". a ."
+          ". . .";
+      }
+
+      #form {
+        background-color: darkgray;
+        border: solid 1px;
+        border-radius: 50px;
+        padding: 50px;
+        grid-area: a;
+        display: grid;
+        grid-gap: 1rem;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+        grid-template-areas:
+          "input_one input_one input_one input_one"
+          "input_two input_two input_two input_two"
+          "plus minus divide multiply"
+          ". clear clear ."
+          ".output output .";
+      }
+
+      #input_one {
+        grid-area: input_one;
+      }
+
+      #input_two {
+        grid-area: input_two;
+      }
+
+      #plus {
+        grid-area: plus;
+      }
+
+      #minus {
+        grid-area: minus;
+      }
+
+      #multiply {
+        grid-area: multiply;
+      }
+
+      #divide {
+        grid-area: divide;
+      }
+
+      #clear {
+        border: solid 1px #000000;
+        border-radius: 3px;
+        background-color: aquamarine;
+        grid-area: clear;
+      }
+
+      #output {
+        grid-area: output;
+      }
+
+      .action {
+        border: solid 1px #000000;
+        border-radius: 3px;
+        background-color: forestgreen;
+        font-weight: 900;
+        color: aliceblue;
+        text-shadow: 0px 0px 1px #000000;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="container"></div>
+
+    <script
+      src="https://unpkg.com/react@16/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script type="text/babel">
+      "use strict";
+
+      const e = React.createElement;
+      class Calculator extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            input_one: 0,
+            input_two: 0,
+            output: 0,
+          };
+
+          this.changeHandler = this.changeHandler.bind(this);
+          this.isValid = this.isValid.bind(this);
+        }
+
+        changeHandler(event) {
+          this.setState({
+            [event.target.id]: /^0[0-9]+$/.test(event.target.value)
+              ? event.target.value.slice(1)
+              : event.target.value,
+          });
+        }
+
+        isValid() {
+          return (
+            this.state.input_one !== "" &&
+            /^-?[0-9]+(\.[0-9]+)?$/.test(this.state.input_one) &&
+            this.state.input_two !== "" &&
+            /^-?[0-9]+(\.[0-9]+)?$/.test(this.state.input_two)
+          );
+        }
+
+        render() {
+          return (
+            <form id="form">
+              <input
+                id="input_one"
+                type="text"
+                pattern="^-?[0-9]+(\.[0-9]+)?$"
+                value={this.state.input_one}
+                onChange={this.changeHandler}
+              />
+              <input
+                id="input_two"
+                type="text"
+                pattern="^-?[0-9]+(\.[0-9]+)?$"
+                value={this.state.input_two}
+                onChange={this.changeHandler}
+              />
+              <input id="output" value={this.state.output} readOnly />
+              <input
+                class="action"
+                id="plus"
+                type="button"
+                value="+"
+                onClick={() => {
+                  if (this.isValid()) {
+                    this.setState({
+                      output:
+                        parseFloat(this.state.input_one) +
+                        parseFloat(this.state.input_two),
+                    });
+                  }
+                }}
+              />
+              <input
+                class="action"
+                id="minus"
+                type="button"
+                value="-"
+                onClick={() => {
+                  if (this.isValid()) {
+                    this.setState({
+                      output:
+                        parseFloat(this.state.input_one) -
+                        parseFloat(this.state.input_two),
+                    });
+                  }
+                }}
+              />
+              <input
+                class="action"
+                id="multiply"
+                type="button"
+                value="*"
+                onClick={() => {
+                  if (this.isValid()) {
+                    this.setState({
+                      output:
+                        parseFloat(this.state.input_one) *
+                        parseFloat(this.state.input_two),
+                    });
+                  }
+                }}
+              />
+              <input
+                class="action"
+                id="divide"
+                type="button"
+                value="/"
+                onClick={() => {
+                  if (this.isValid()) {
+                    this.setState({
+                      output:
+                        parseFloat(this.state.input_one) /
+                        parseFloat(this.state.input_two),
+                    });
+                  }
+                }}
+              />
+              <input
+                id="clear"
+                type="button"
+                value="Clear"
+                onClick={() => {
+                  this.setState({ input_one: 0, input_two: 0, output: 0 });
+                }}
+              />
+            </form>
+          );
+        }
+      }
+
+      const domContainer = document.querySelector("#container");
+      ReactDOM.render(e(Calculator), domContainer);
+    </script>
+  </body>
+</html>
